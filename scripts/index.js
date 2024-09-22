@@ -1,31 +1,31 @@
 const template = document.querySelector("#card-template").content;
 const placesList = document.querySelector(".places__list");
 
-const deleteCard = (event) => {
-    placesList.removeChild(event.currentTarget.parentElement);
+const deleteCard = (card) => {
+    card.remove();
 }
 
-const createTemplateCard = (parameter) => {
+const createTemplateCard = (cardData, handlers) => {    
     const cardItem = template.querySelector(".card").cloneNode(true); 
 
-    cardItem.querySelector(".card__delete-button").addEventListener("click", parameter.deleteCard)
-    cardItem.querySelector(".card__title").textContent = parameter.name;
+    cardItem.querySelector(".card__delete-button").addEventListener("click", () => handlers.deleteCard(cardItem))
+    cardItem.querySelector(".card__title").textContent = cardData.name;
     const img = cardItem.querySelector(".card__image");
 
-    img.src = parameter.url;
-    img.alt = parameter.name;
+    img.src = cardData.link;
+    img.alt = cardData.name;
 
     return cardItem;
 }
 
-const createCard = (parameter) => {
-    const card = createTemplateCard(parameter);
+const createCard = (cardData, handlers) => {
+    const card = createTemplateCard(cardData, handlers);
 
     placesList.appendChild(card);
 }
 
-const initialCard = () => initialCards.forEach((x) => {
-    createCard({name: x.name, url: x.link, deleteCard: deleteCard });
+const initialCard = () => initialCards.forEach((cardData) => {
+    createCard(cardData, { deleteCard: deleteCard });
 })
 
 initialCard();

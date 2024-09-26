@@ -20,9 +20,11 @@ const profileEditButton = document.querySelector(".profile__edit-button");
 const profileAddButton = document.querySelector(".profile__add-button");
 const popupCloseButtons = document.querySelectorAll(".popup__close");
 
+const imgPopUp = popupTypeImage.querySelector(".popup__image");
+const caption = popupTypeImage.querySelector(".popup__caption");
+
 const previewCard = (cardData) => {
-  const imgPopUp = popupTypeImage.querySelector(".popup__image");
-  const caption = popupTypeImage.querySelector(".popup__caption");
+
   imgPopUp.src = cardData.link;
   imgPopUp.alt = cardData.name;
   caption.textContent = cardData.name;
@@ -30,7 +32,7 @@ const previewCard = (cardData) => {
   Modal.show(popupTypeImage);
 }
 
-const editProfileFormSubmit = (e) => {
+const handleProfileFormSubmit = (e) => {
   e.preventDefault();
 
   profileTitle.textContent = editProfileForm.elements.name.value;
@@ -39,30 +41,21 @@ const editProfileFormSubmit = (e) => {
   Modal.close(editProfilePopup);
 }
 
-const newPlaceFormSubmit = (e) => {
+const handleCardFormSubmit = (e) => {
   e.preventDefault();
 
   createCard(placesList, templateCard, {
     link: newPlaceForm.elements["link"].value,
     name: newPlaceForm.elements["place-name"].value
-  }, { deleteCard, previewCard: previewCard, likeCard: likeCard  }, true);
+  }, { deleteCard, previewCard: previewCard  }, true);
 
   clearForm(newPlaceForm);
   
   Modal.close(popupNewCard);
 };
 
-const likeCard = (likeElement) => {
-  if (!likeElement.classList.contains("card__like-button_is-active")){
-    likeElement.classList.add("card__like-button_is-active");
-  }
-  else {
-    likeElement.classList.remove("card__like-button_is-active");
-  }
-}
-
-const initialCard = () => initialCards.forEach((cardData) => {
-    createCard(placesList, templateCard, cardData, { deleteCard, previewCard: previewCard, likeCard: likeCard  });
+const renderCards = () => initialCards.forEach((cardData) => {
+    createCard(placesList, templateCard, cardData, { deleteCard, previewCard: previewCard });
 });
 
 profileEditButton.addEventListener("click", () => {
@@ -85,12 +78,12 @@ profileAddButton.addEventListener("click", () => {
   });
 });
 
-editProfileForm.addEventListener('submit', editProfileFormSubmit);
-newPlaceForm.addEventListener('submit', newPlaceFormSubmit);
+editProfileForm.addEventListener('submit', handleProfileFormSubmit);
+newPlaceForm.addEventListener('submit', handleCardFormSubmit);
 
 popupCloseButtons.forEach(popupCloseButton => {
-    var popUp = popupCloseButton.closest(".popup");
+    const popUp = popupCloseButton.closest(".popup");
     popupCloseButton.addEventListener("click", () => Modal.close(popUp));
 });
 
-initialCard();
+renderCards();

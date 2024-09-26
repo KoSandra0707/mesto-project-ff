@@ -3,9 +3,10 @@ const createTemplateCard = (templateCard, cardData, handlers) => {
   const likeElement = cardItem.querySelector(".card__like-button")
   const img = cardItem.querySelector(".card__image");
 
-  likeElement.addEventListener("click", () => handlers.likeCard(likeElement));
+  likeElement.addEventListener("click", () => likeCard(likeElement));
   cardItem.querySelector(".card__delete-button").addEventListener("click", () => handlers.deleteCard(cardItem));
-  cardItem.querySelector(".card__image").addEventListener("click", () => handlers.previewCard(cardData));
+  img.addEventListener("click", () => handlers.previewCard(cardData)); 
+
   cardItem.querySelector(".card__title").textContent = cardData.name;
 
   img.src = cardData.link;
@@ -28,5 +29,9 @@ const createCard = (placesList, templateCard, cardData, handlers, firstInList = 
     placesList.appendChild(card);
   }
 }
+
+const likeCard = (likeElement) => {
+  likeElement.classList.toggle("card__like-button_is-active");
+};
 
 export { deleteCard, createCard }

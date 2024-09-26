@@ -1,4 +1,4 @@
-const escClosePopUp = (e) => {
+const handleEscape = (e) => {
     if (e.key === "Escape"){
         const allPopUp = e.currentTarget.querySelectorAll(".popup");
         allPopUp.forEach(popUp => {
@@ -9,12 +9,12 @@ const escClosePopUp = (e) => {
 
 const show = (popUp) => {
     popUp.classList.add("popup_is-opened");
-    document.addEventListener("keydown", escClosePopUp);
+    document.addEventListener("keydown", handleEscape);
 };
 
 const close = (popUp) => {
     popUp.classList.remove("popup_is-opened");
-    document.removeEventListener("keydown", escClosePopUp);
+    document.removeEventListener("keydown", handleEscape);
 }
 
 export { show, close }

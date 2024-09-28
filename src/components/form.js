@@ -17,4 +17,23 @@ const clearForm = (form) => {
     }
 }
 
-export { setDataForm, clearForm }
+const renderLoadingFormWithOperationAsync = async (from, operation) => {
+    const button = from.querySelector(".popup__button");
+
+    renderLoading(true, button);
+    await operation();
+    renderLoading(false, button);
+}
+
+const renderLoading = (isLoading, buttonElement) => {
+    const loadingDots = "...";
+    if (isLoading) {
+      buttonElement.textContent = buttonElement.textContent + loadingDots;
+      buttonElement.disabled = true;
+    } else {
+      buttonElement.textContent = buttonElement.textContent.replace(loadingDots, '');
+      buttonElement.disabled = false;
+    }
+  }
+
+export { setDataForm, clearForm, renderLoadingFormWithOperationAsync }

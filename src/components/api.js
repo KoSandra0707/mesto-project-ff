@@ -12,17 +12,12 @@ const checkResponseAndReturnPromise = (res) => {
     }
     return Promise.reject(`Ошибка: ${res.status}`);
 };
-
-const handleErrorResponse = (error) => {
-    console.log(error);
-}
   
 export const getUserInfo = () => {
     return fetch(`${config.baseUrl}/users/me`, {
         headers: config.headers
     })
     .then(checkResponseAndReturnPromise)
-    .catch(handleErrorResponse)
 };
 
 export const getInitialCards = () => {
@@ -30,7 +25,6 @@ export const getInitialCards = () => {
         headers: config.headers
     })
     .then(checkResponseAndReturnPromise)
-    .catch(handleErrorResponse)
 };
 
 export const updateUserInfo = (name, about) => {
@@ -43,7 +37,6 @@ export const updateUserInfo = (name, about) => {
         })
     })
     .then(checkResponseAndReturnPromise)
-    .catch(handleErrorResponse)
 };
 
 export const addCard = (name, link) => {
@@ -56,7 +49,6 @@ export const addCard = (name, link) => {
         })
     })
     .then(checkResponseAndReturnPromise)
-    .catch(handleErrorResponse)
 };
 
 export const deleteCard = (cardId) => {
@@ -65,7 +57,6 @@ export const deleteCard = (cardId) => {
         headers: config.headers
     })
     .then(checkResponseAndReturnPromise)
-    .catch(handleErrorResponse)
 };
 
 
@@ -75,7 +66,6 @@ export const likeCard = (cardId) => {
         headers: config.headers
     })
     .then(checkResponseAndReturnPromise)
-    .catch(handleErrorResponse)
 };
 
 export const unlikeCard = (cardId) => {
@@ -84,7 +74,6 @@ export const unlikeCard = (cardId) => {
         headers: config.headers
     })
     .then(checkResponseAndReturnPromise)
-    .catch(handleErrorResponse)
 };
 
 export const updateAvatar = (avatarUrl) => {
@@ -96,5 +85,8 @@ export const updateAvatar = (avatarUrl) => {
         })
     })
     .then(checkResponseAndReturnPromise)
-    .catch(handleErrorResponse)
 };
+
+export const baseHandleErrorResponse = (error) => {
+    console.log(error);
+}

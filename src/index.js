@@ -1,5 +1,5 @@
 import './pages/index.css';
-import { deleteCard, createCard } from './components/card.js'
+import { createCard } from './components/card.js'
 import { setDataForm, clearForm, renderLoadingFormWithOperationAsync } from './components/form.js'
 import * as Modal from './components/modal.js'
 import { enableValidation, clearValidation } from './components/validation.js'
@@ -23,17 +23,24 @@ const imgPopUp = popupTypeImage.querySelector(".popup__image");
 const caption = popupTypeImage.querySelector(".popup__caption");
 const profileAvatar = document.querySelector(".profile__image");
 const profileAvatarEditButton = document.querySelector(".profile__avatar-edit-button");
-const initialCards = await Api.getInitialCards();
+const initialCards = await Api.getInitialCards()
+.catch(Api.baseHandleErrorResponse);
 let userInfo = undefined;
 
-const updateUserInfo = async () => {
-  userInfo = await Api.getUserInfo();
-  profileTitle.textContent = userInfo.name;
-  profileDescription.textContent = userInfo.about;
-  profileAvatar.style.backgroundImage = `url(${userInfo.avatar})`;
+const setUserInfo = (name, about, avatar) => {
+  profileTitle.textContent = name;
+  profileDescription.textContent = about;
+  profileAvatar.style.backgroundImage = `url(${avatar})`;
 }
 
-await updateUserInfo();
+const updateUserInfo = async () => {
+  userInfo = await Api.getUserInfo()
+  .catch(Api.baseHandleErrorResponse);
+  setUserInfo(userInfo.name, userInfo.about, userInfo.avatar);
+}
+
+await updateUserInfo()
+.catch(Api.baseHandleErrorResponse);
 
 const validationConfig = {
   formSelector: '.popup__form',
@@ -58,8 +65,9 @@ const handleProfileFormSubmit = async (e) => {
   e.preventDefault();
 
   await renderLoadingFormWithOperationAsync(e.currentTarget, async () => {
-    await Api.updateUserInfo(editProfileForm.elements.name.value, editProfileForm.elements.description.value);
-    await updateUserInfo();
+    const updateUserInfo = await Api.updateUserInfo(editProfileForm.elements.name.value, editProfileForm.elements.description.value)
+    .catch(Api.baseHandleErrorResponse);
+    setUserInfo(updateUserInfo.name, updateUserInfo.about, updateUserInfo.avatar);
   });
   Modal.close(editProfilePopup);
 };
@@ -68,11 +76,37 @@ const handleAvatarFormSubmit = async (e) => {
   e.preventDefault();
 
   await renderLoadingFormWithOperationAsync(e.currentTarget, async () => {
-    await Api.updateAvatar(editAvatarForm.elements.avatar.value);
-    await updateUserInfo();
+    const updateUserInfo = await Api.updateAvatar(editAvatarForm.elements.avatar.value)
+    .catch(Api.baseHandleErrorResponse);
+    setUserInfo(updateUserInfo.name, updateUserInfo.about, updateUserInfo.avatar);
   })
   Modal.close(popupEditAvatar);
 };
+
+const likeCard = async (cardId, userId, likeElement, likeCount, updateLikeInfo) => {
+  let cardInfo = undefined;
+  if (likeElement.classList.contains("card__like-button_is-active")){
+    cardInfo = await Api.unlikeCard(cardId)
+    .catch(Api.baseHandleErrorResponse);
+  }
+  else {
+    cardInfo = await Api.likeCard(cardId)
+    .catch(Api.baseHandleErrorResponse);
+  }
+
+  if (cardInfo) {
+    updateLikeInfo(cardInfo, userId, likeElement, likeCount);
+  }
+};
+
+const deleteCard = async (card, cardId) => {
+  const deleteInfo = await Api.deleteCard(cardId)
+  .catch(Api.baseHandleErrorResponse);
+
+  if (deleteInfo){
+    card.remove();
+  }
+}
 
 const handleCardFormSubmit = async (e) => {
   e.preventDefault();
@@ -81,9 +115,10 @@ const handleCardFormSubmit = async (e) => {
   let cardData = undefined;
 
   await renderLoadingFormWithOperationAsync(e.currentTarget, async () => {
-    cardData = await Api.addCard(name, link);
+    cardData = await Api.addCard(name, link)
+    .catch(Api.baseHandleErrorResponse);
 
-    createCard(placesList, templateCard, cardData, userInfo._id, { previewCard: previewCard  }, true);
+    createCard(placesList, templateCard, cardData, userInfo._id, { previewCard: previewCard, likeCard: likeCard, deleteCard: deleteCard }, true);
   })
   
   Modal.close(popupNewCard);
@@ -91,7 +126,7 @@ const handleCardFormSubmit = async (e) => {
 };
 
 const renderCards = () => initialCards.forEach((cardData) => {
-    createCard(placesList, templateCard, cardData, userInfo._id, { previewCard: previewCard });
+    createCard(placesList, templateCard, cardData, userInfo._id, { previewCard: previewCard, likeCard: likeCard, deleteCard: deleteCard });
 });
 
 profileEditButton.addEventListener("click", () => {
